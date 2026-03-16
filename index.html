@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>L'Assistant Inclusion — Documents administratifs simplifiés</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800&family=Source+Sans+3:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #0D1B2A; --bg2: #132236; --bg3: #1A2E45; --surface: #1F3650;
+      --border: #2A4A68; --accent: #F0A500; --accent2: #3EC9A7;
+      --text: #EDF2F7; --muted: #8BA5BF; --danger: #E05C5C;
+      --radius: 12px; --radius-lg: 20px;
+    }
+    body { font-family: 'Source Sans 3', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; display: flex; flex-direction: column; }
+    body::before { content: ''; position: fixed; inset: 0; z-index: 0; background: radial-gradient(ellipse 60% 40% at 80% 10%, rgba(240,165,0,.07) 0%, transparent 60%), radial-gradient(ellipse 50% 50% at 10% 80%, rgba(62,201,167,.06) 0%, transparent 60%); pointer-events: none; }
+    header { position: sticky; top: 0; z-index: 100; background: rgba(13,27,42,.92); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); padding: 0 32px; height: 68px; display: flex; align-items: center; justify-content: space-between; }
+    .logo { display: flex; align-items: center; gap: 12px; }
+    .logo-mark { width: 40px; height: 40px; border-radius: 12px; background: linear-gradient(135deg, var(--accent), #e08c00); display: flex; align-items: center; justify-content: center; font-size: 20px; box-shadow: 0 4px 16px rgba(240,165,0,.3); }
+    .logo-name { font-family: 'Playfair Display', serif; font-size: 1.25rem; font-weight: 700; color: var(--text); }
+    .logo-name span { color: var(--accent); }
+    .header-langs { display: flex; gap: 6px; }
+    .lang-chip { font-size: .72rem; font-weight: 600; padding: 3px 9px; border-radius: 20px; background: var(--surface); border: 1px solid var(--border); color: var(--muted); }
+    .hero { position: relative; z-index: 1; text-align: center; padding: 52px 24px 36px; }
+    .hero-eyebrow { display: inline-flex; align-items: center; gap: 7px; font-size: .78rem; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; color: var(--accent); margin-bottom: 16px; }
+    .hero-eyebrow::before, .hero-eyebrow::after { content: ''; display: block; width: 28px; height: 1px; background: var(--accent); opacity: .5; }
+    .hero h1 { font-family: 'Playfair Display', serif; font-size: clamp(2rem, 4vw, 3rem); font-weight: 800; line-height: 1.15; margin-bottom: 14px; }
+    .hero h1 em { font-style: italic; color: var(--accent); }
+    .hero p { max-width: 520px; margin: 0 auto 28px; font-size: 1.02rem; color: var(--muted); line-height: 1.7; font-weight: 300; }
+    #api-banner { position: relative; z-index: 1; max-width: 660px; margin: 0 auto 36px; background: var(--bg2); border: 1px solid var(--accent); border-radius: var(--radius-lg); padding: 20px 24px; }
+    #api-banner p { font-size: .85rem; color: var(--muted); line-height: 1.6; margin-bottom: 12px; }
+    #api-banner p strong { color: var(--accent); }
+    .api-row { display: flex; gap: 10px; }
+    #api-input { flex: 1; background: var(--bg3); border: 1px solid var(--border); border-radius: 10px; padding: 10px 14px; font-family: 'Source Sans 3', sans-serif; font-size: .85rem; color: var(--text); outline: none; }
+    #api-input:focus { border-color: var(--accent); }
+    #api-save-btn { background: var(--accent); color: var(--bg); border: none; border-radius: 10px; padding: 10px 18px; font-family: 'Source Sans 3', sans-serif; font-size: .85rem; font-weight: 600; cursor: pointer; }
+    .status-msg { font-size: .82rem; padding: 8px 12px; border-radius: 8px; margin-top: 10px; display: none; }
+    .status-msg.error { background: rgba(224,92,92,.12); border: 1px solid var(--danger); color: var(--danger); display: block; }
+    .tabs-wrapper { position: relative; z-index: 1; max-width: 900px; margin: 0 auto; padding: 0 20px 60px; width: 100%; }
+    .tabs-nav { display: flex; gap: 4px; margin-bottom: 24px; border-bottom: 1px solid var(--border); overflow-x: auto; }
+    .tab-btn { display: flex; align-items: center; gap: 7px; padding: 11px 16px; border: none; background: transparent; font-family: 'Source Sans 3', sans-serif; font-size: .88rem; font-weight: 500; color: var(--muted); cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -1px; white-space: nowrap; transition: color .15s, border-color .15s; }
+    .tab-btn:hover { color: var(--text); }
+    .tab-btn.active { color: var(--accent); border-bottom-color: var(--accent); }
+    .tab-panel { display: none; animation: fadeIn .22s ease; }
+    .tab-panel.active { display: block; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+    .panel-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+    @media (max-width: 640px) { .panel-grid { grid-template-columns: 1fr; } }
+    .pane { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 20px; display: flex; flex-direction: column; gap: 12px; }
+    .pane-label { font-size: .72rem; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; color: var(--muted); }
+    textarea.field { width: 100%; background: var(--bg3); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px; font-family: 'Source Sans 3', sans-serif; font-size: .9rem; color: var(--text); resize: vertical; min-height: 180px; outline: none; line-height: 1.65; transition: border-color .15s; }
+    textarea.field:focus { border-color: var(--accent); }
+    .result-area { width: 100%; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px; font-family: 'Source Sans 3', sans-serif; font-size: .88rem; color: var(--text); min-height: 180px; line-height: 1.7; white-space: pre-wrap; }
+    .lang-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+    .lang-row label { font-size: .82rem; color: var(--muted); white-space: nowrap; }
+    select.lang-select { background: var(--bg3); border: 1px solid var(--border); border-radius: 8px; padding: 7px 12px; font-family: 'Source Sans 3', sans-serif; font-size: .85rem; color: var(--text); outline: none; cursor: pointer; }
+    .run-btn { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; padding: 12px; background: linear-gradient(135deg, var(--accent), #d49200); color: var(--bg); border: none; border-radius: var(--radius); font-family: 'Source Sans 3', sans-serif; font-size: .92rem; font-weight: 600; cursor: pointer; transition: opacity .15s; }
+    .run-btn:hover { opacity: .88; }
+    .run-btn:disabled { background: var(--surface); color: var(--muted); cursor: not-allowed; }
+    .copy-btn { align-self: flex-end; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 5px 12px; font-family: 'Source Sans 3', sans-serif; font-size: .78rem; color: var(--muted); cursor: pointer; }
+    .copy-btn:hover { color: var(--accent2); border-color: var(--accent2); }
+    .loading-dots { display: inline-flex; gap: 4px; align-items: center; }
+    .loading-dots span { width: 6px; height: 6px; border-radius: 50%; background: var(--bg); animation: ldot .8s infinite ease-in-out; }
+    .loading-dots span:nth-child(2) { animation-delay: .13s; }
+    .loading-dots span:nth-child(3) { animation-delay: .26s; }
+    @keyframes ldot { 0%,80%,100% { transform: scale(1); opacity: .5; } 40% { transform: scale(1.4); opacity: 1; } }
+    .coming-soon { text-align: center; padding: 60px 20px; color: var(--muted); }
+    .coming-soon .icon { font-size: 2.5rem; margin-bottom: 12px; }
+    footer { position: relative; z-index: 1; text-align: center; padding: 24px; border-top: 1px solid var(--border); font-size: .78rem; color: var(--muted); }
+    footer a { color: var(--accent); text-decoration: none; }
+  </style>
+</head>
+<body>
+<header>
+  <div class="logo">
+    <div class="logo-mark">🌍</div>
+    <span class="logo-name">L'Assistant <span>Inclusion</span></span>
+  </div>
+  <div class="header-langs">
+    <span class="lang-chip">FR</span><span class="lang-chip">AR</span><span class="lang-chip">EN</span><span class="lang-chip">ES</span><span class="lang-chip">PT</span><span class="lang-chip">TR</span>
+  </div>
+</header>
+
+<div class="hero">
+  <div class="hero-eyebrow">Intelligence Artificielle · Accès aux droits</div>
+  <h1>Comprendre vos documents<br><em>dans votre langue</em></h1>
+  <p>Simplification, traduction et explication des documents administratifs français — accessible à tous, quelle que soit votre langue d'origine.</p>
+</div>
+
+<div id="api-banner">
+  <p><strong>🔑 Clé API Anthropic requise</strong><br>
+  Ce site utilise l'IA Claude d'Anthropic. Entrez votre clé API pour activer les fonctionnalités.<br>
+  Obtenez gratuitement une clé sur <strong>console.anthropic.com</strong></p>
+  <div class="api-row">
+    <input id="api-input" type="password" placeholder="sk-ant-api03-…"/>
+    <button id="api-save-btn" onclick="saveApiKey()">Activer ✓</button>
+  </div>
+  <div id="api-status" class="status-msg"></div>
+</div>
+
+<div class="tabs-wrapper">
+  <nav class="tabs-nav">
+    <button class="tab-btn active" onclick="switchTab('simplifier',this)">✂️ Simplifier</button>
+    <button class="tab-btn" onclick="switchTab('traduire',this)">🌐 Traduire</button>
+    <button class="tab-btn" onclick="switchTab('expliquer',this)">📄 Expliquer un document</button>
+    <button class="tab-btn" onclick="switchTab('glossaire',this)">📚 Glossaire</button>
+  </nav>
+
+  <div id="tab-simplifier" class="tab-panel active">
+    <div class="panel-grid">
+      <div class="pane">
+        <span class="pane-label">Texte administratif original</span>
+        <textarea class="field" id="simp-input" placeholder="Collez ici votre texte administratif…"></textarea>
+        <div class="lang-row">
+          <label>Simplifier en :</label>
+          <select class="lang-select" id="simp-lang">
+            <option value="français">🇫🇷 Français</option>
+            <option value="arabe">🇲🇦 Arabe</option>
+            <option value="anglais">🇬🇧 Anglais</option>
+            <option value="espagnol">🇪🇸 Espagnol</option>
+            <option value="portugais">🇵🇹 Portugais</option>
+            <option value="turc">🇹🇷 Turc</option>
+          </select>
+        </div>
+        <button class="run-btn" id="simp-btn" onclick="runSimplify()">✂️ Simplifier ce texte</button>
+      </div>
+      <div class="pane">
+        <span class="pane-label">Résultat simplifié</span>
+        <div class="result-area" id="simp-output">Le texte simplifié apparaîtra ici…</div>
+        <button class="copy-btn" onclick="copyResult('simp-output',this)">📋 Copier</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="tab-traduire" class="tab-panel">
+    <div class="coming-soon"><div class="icon">🌐</div><p>Fonctionnalité <strong>Traduire</strong> — sera ajoutée dans la prochaine Pull Request.</p></div>
+  </div>
+  <div id="tab-expliquer" class="tab-panel">
+    <div class="coming-soon"><div class="icon">📄</div><p>Fonctionnalité <strong>Expliquer un document</strong> — sera ajoutée dans la prochaine Pull Request.</p></div>
+  </div>
+  <div id="tab-glossaire" class="tab-panel">
+    <div class="coming-soon"><div class="icon">📚</div><p>Fonctionnalité <strong>Glossaire</strong> — sera ajoutée dans la prochaine Pull Request.</p></div>
+  </div>
+</div>
+
+<footer>L'Assistant Inclusion · Propulsé par <a href="https://anthropic.com" target="_blank">Claude (Anthropic)</a> · Master Machine Learning · Sorbonne</footer>
+
+<script>
+  let API_KEY = '';
+  const SYSTEM = `Tu es "L'Assistant Inclusion", un assistant expert en documents administratifs français. Tu aides les personnes étrangères. Sois clair, bienveillant et précis. Réponds toujours dans la langue demandée.`;
+
+  function saveApiKey() {
+    const val = document.getElementById('api-input').value.trim();
+    const status = document.getElementById('api-status');
+    if (!val.startsWith('sk-')) { status.className = 'status-msg error'; status.textContent = '❌ Clé invalide. Elle doit commencer par "sk-".'; return; }
+    API_KEY = val; document.getElementById('api-banner').style.display = 'none';
+  }
+
+  function switchTab(name, btn) {
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById('tab-' + name).classList.add('active'); btn.classList.add('active');
+  }
+
+  async function callClaude(prompt) {
+    if (!API_KEY) { alert('Veuillez d\'abord entrer votre clé API.'); throw new Error('no key'); }
+    const resp = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'x-api-key': API_KEY, 'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true' },
+      body: JSON.stringify({ model: 'claude-sonnet-4-20250514', max_tokens: 1500, system: SYSTEM, messages: [{ role: 'user', content: prompt }] })
+    });
+    const data = await resp.json();
+    if (!resp.ok) throw new Error(data.error?.message || 'Erreur API');
+    return data.content[0].text;
+  }
+
+  async function runSimplify() {
+    const text = document.getElementById('simp-input').value.trim();
+    const lang = document.getElementById('simp-lang').value;
+    if (!text) { alert('Veuillez coller un texte.'); return; }
+    const btn = document.getElementById('simp-btn');
+    btn.disabled = true; btn.innerHTML = '<span class="loading-dots"><span></span><span></span><span></span></span> Traitement…';
+    document.getElementById('simp-output').textContent = '';
+    try {
+      const r = await callClaude(`Simplifie ce texte administratif. Réponds UNIQUEMENT en ${lang}. Phrases courtes. Mets en évidence obligations et délais.\n\nTEXTE :\n${text}`);
+      document.getElementById('simp-output').textContent = r;
+    } catch(e) { document.getElementById('simp-output').textContent = '❌ Erreur : ' + e.message; }
+    finally { btn.disabled = false; btn.innerHTML = '✂️ Simplifier ce texte'; }
+  }
+
+  function copyResult(id, btn) {
+    navigator.clipboard.writeText(document.getElementById(id).textContent).then(() => {
+      const o = btn.textContent; btn.textContent = '✅ Copié !'; setTimeout(() => btn.textContent = o, 1600);
+    });
+  }
+</script>
+</body>
+</html>
